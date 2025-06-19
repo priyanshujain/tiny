@@ -45,18 +45,17 @@ def process(note_file: Path, deploy: bool, dry_run: bool):
         console=console,
     ) as progress:
         # Import here to avoid circular imports
-        from .processors.note_parser import NoteParser
+        from .processors.note_parser import read_note_file
         from .ai.vertex_client import VertexAIClient
         from .processors.blog_generator import BlogGenerator
         from .website.file_manager import FileManager
         from .website.index_updater import IndexUpdater
         from .git.operations import GitOperations
         
-        task = progress.add_task("Parsing note...", total=6)
+        task = progress.add_task("Reading note...", total=6)
         
-        # Step 1: Parse note
-        parser = NoteParser()
-        note_content = parser.parse(note_file)
+        # Step 1: Read note
+        note_content = read_note_file(note_file)
         progress.update(task, advance=1, description="Generating blog content with AI...")
         
         # Step 2: Generate blog content
@@ -156,9 +155,9 @@ VERTEX_AI_LOCATION=us-central1
 VERTEX_AI_MODEL=gemini-1.5-flash
 
 # Website settings
-WEBSITE_PATH=../priyanshujain.dev
-WRITINGS_DIR=src/pages/writings
-WRITINGS_INDEX_FILE=src/pages/writings/index.js
+WEBSITE_PATH=.
+WRITINGS_DIR=.
+WRITINGS_INDEX_FILE=./index.js
 
 # Git settings
 GIT_REMOTE=origin
@@ -180,24 +179,7 @@ TEMPERATURE=0.7
     notes_dir = Path(config.notes_dir)
     notes_dir.mkdir(exist_ok=True)
     console.print(f"[green]✓[/green] Created notes directory: {notes_dir}")
-    
-    # Create example note
-    example_note = notes_dir / "example.md"
-    if not example_note.exists():
-        example_content = """# Daily Reflection - 2025-01-06
-
-Today I had some interesting thoughts about AI and software development.
-
-Key insights:
-- AI tools are changing how we approach problem-solving
-- The importance of maintaining human oversight
-- Need to balance automation with creativity
-
-This reminded me of building that ERP system - technology should enhance human capability, not replace it entirely.
-"""
-        example_note.write_text(example_content)
-        console.print(f"[green]✓[/green] Created example note: {example_note}")
-    
+        
     console.print("\n[bold green]Setup complete![/bold green]")
     console.print("Next steps:")
     console.print("1. Set up Google Cloud authentication:")
