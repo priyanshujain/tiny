@@ -15,10 +15,7 @@ console = Console()
 
 @click.command()
 @click.argument("note_file", type=click.Path(exists=True, path_type=Path))
-@click.option(
-    "--dry-run", is_flag=True, help="Show what would be done without executing"
-)
-def main(note_file: Path, dry_run: bool):
+def main(note_file: Path):
     """Convert notes to posts."""
     config = get_config()
 
@@ -30,8 +27,6 @@ def main(note_file: Path, dry_run: bool):
         )
     )
 
-    if dry_run:
-        console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]")
 
     with Progress(
         SpinnerColumn(),
@@ -61,10 +56,6 @@ def main(note_file: Path, dry_run: bool):
         post_file_path = post_writer.write_post(post_content)
         progress.update(task, advance=1, description="Complete!")
 
-        if dry_run:
-            console.print(
-                "[yellow]Note: This was a dry run - no files were actually created[/yellow]"
-            )
 
         progress.update(task, advance=1)
 
