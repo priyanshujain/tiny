@@ -6,4 +6,4 @@
 - Please use `pathlib` over `os.path`
 - Always use uv for running commands
 - Focus on unix philosophy: do one thing and do it well
-- Always run ruff check before committing (uvx ruff format)
+- Always run ruff check and ruff format before committing

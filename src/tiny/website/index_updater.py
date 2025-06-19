@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
 
-from tiny.ai.vertex_client import BlogContent
+from tiny.ai.llm_client import BlogContent
 from tiny.config import TinyConfig
 from tiny.processors.blog_generator import BlogGenerator
 from tiny.website.file_manager import FileManager

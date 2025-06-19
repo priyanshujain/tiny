@@ -4,9 +4,8 @@ import logging
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from tiny.ai.vertex_client import BlogContent
+from tiny.ai.llm_client import BlogContent
 from tiny.config import TinyConfig
 
 
@@ -84,9 +83,9 @@ class BlogGenerator:
         # Format the date for display
         try:
             date_obj = datetime.strptime(blog_content.date, "%Y-%m-%d")
-            formatted_date = date_obj.strftime("%b %d, %Y")
+            date_obj.strftime("%b %d, %Y")
         except ValueError:
-            formatted_date = blog_content.date
+            pass
 
         # Split content into paragraphs and wrap each in <p> tags
         paragraphs = blog_content.content.split("\n\n")
