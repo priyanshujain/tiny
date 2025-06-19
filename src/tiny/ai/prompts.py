@@ -81,6 +81,7 @@ EXISTING TITLES FOR REFERENCE:
 Return only the title, nothing else.
 """
 
+
 def get_style_examples() -> str:
     """Get example blog posts for style reference."""
     return """

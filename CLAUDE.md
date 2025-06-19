@@ -1,0 +1,9 @@
+- Never commit and/or push before the user has tested your changes
+- Always fix import issues, always fix all lint issues, always typecheck and fix type issues even in unrelated code
+- Please use function over class when possible
+- Please use f-strings over string concatenation
+- Please use `with` statement for file operations
+- Please use `pathlib` over `os.path`
+- Always use uv for running commands
+- Focus on unix philosophy: do one thing and do it well
+- Always run ruff check before committing (uvx ruff format)
