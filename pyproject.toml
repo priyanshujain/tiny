@@ -8,8 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "langchain",
-    "langchain-google-vertexai", 
+    "litellm",
     "click",
     "pydantic",
     "pydantic-settings",
@@ -25,7 +24,6 @@ tiny = "tiny.cli:main"
 [project.optional-dependencies]
 dev = [
     "pytest",
-    "black",
     "ruff",
 ]
 
@@ -37,6 +35,7 @@ build-backend = "hatchling.build"
 line-length = 88
 target-version = "py313"
 
-[tool.black]
-line-length = 88
-target-version = ['py313']
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+

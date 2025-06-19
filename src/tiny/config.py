@@ -1,29 +1,18 @@
 """Configuration management for tiny agent."""
 
-import os
 from pathlib import Path
-from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
 class TinyConfig(BaseSettings):
     """Configuration for the tiny agent."""
 
-    # Vertex AI settings
-    google_application_credentials: Optional[str] = Field(
-        default=None,
-        description="Path to Google Cloud service account key file (optional if using ADC)",
-    )
-    google_cloud_project: Optional[str] = Field(
-        default=None, description="Google Cloud project ID (optional if using ADC)"
-    )
-    vertex_ai_location: str = Field(
-        default="us-east5", description="Vertex AI location"
-    )
-    vertex_ai_model: str = Field(
-        default="gemini-2.5-flash", description="Vertex AI model to use"
+    # LLM settings
+    model: str = Field(
+        default="vertex_ai/gemini-2.5-flash",
+        description="LLM model to use (any LiteLLM compatible model)",
     )
 
     # Website settings
