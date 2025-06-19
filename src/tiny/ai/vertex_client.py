@@ -8,8 +8,8 @@ from langchain_google_vertexai import ChatVertexAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel
 
-from ..config import TinyConfig
-from .prompts import BLOG_CONVERSION_PROMPT, get_style_examples
+from tiny.config import TinyConfig
+from tiny.ai.prompts import BLOG_CONVERSION_PROMPT, get_style_examples
 
 
 logger = logging.getLogger(__name__)

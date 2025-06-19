@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-from ..config import TinyConfig
+from tiny.config import TinyConfig
 
 
 logger = logging.getLogger(__name__)

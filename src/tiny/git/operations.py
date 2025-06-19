@@ -8,7 +8,7 @@ from typing import List, Optional
 import git
 from git import Repo
 
-from ..config import TinyConfig
+from tiny.config import TinyConfig
 
 
 logger = logging.getLogger(__name__)

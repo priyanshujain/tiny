@@ -6,8 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from ..ai.vertex_client import BlogContent
-from ..config import TinyConfig
+from tiny.ai.vertex_client import BlogContent
+from tiny.config import TinyConfig
 
 
 logger = logging.getLogger(__name__)

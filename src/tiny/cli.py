@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from .config import get_config
+from tiny.config import get_config
 
 
 console = Console()
@@ -45,12 +45,12 @@ def process(note_file: Path, deploy: bool, dry_run: bool):
         console=console,
     ) as progress:
         # Import here to avoid circular imports
-        from .processors.note_parser import read_note_file
-        from .ai.vertex_client import VertexAIClient
-        from .processors.blog_generator import BlogGenerator
-        from .website.file_manager import FileManager
-        from .website.index_updater import IndexUpdater
-        from .git.operations import GitOperations
+        from tiny.processors.note_parser import read_note_file
+        from tiny.ai.vertex_client import VertexAIClient
+        from tiny.processors.blog_generator import BlogGenerator
+        from tiny.website.file_manager import FileManager
+        from tiny.website.index_updater import IndexUpdater
+        from tiny.git.operations import GitOperations
         
         task = progress.add_task("Reading note...", total=6)
         
@@ -119,7 +119,7 @@ def batch(notes_dir: Path, deploy: bool):
             console.print(f"[red]✗[/red] Failed to process {note_file}: {e}")
     
     if deploy:
-        from .git.operations import GitOperations
+        from tiny.git.operations import GitOperations
         git_ops = GitOperations(config)
         git_ops.deploy()
         console.print("[green]✓[/green] Batch deployment complete")
