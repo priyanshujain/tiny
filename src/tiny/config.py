@@ -21,25 +21,25 @@ class TinyConfig(BaseSettings):
         description="Google Cloud project ID (optional if using ADC)"
     )
     vertex_ai_location: str = Field(
-        default="us-central1",
+        default="us-east5",
         description="Vertex AI location"
     )
     vertex_ai_model: str = Field(
-        default="gemini-1.5-flash",
+        default="gemini-2.5-flash",
         description="Vertex AI model to use"
     )
     
     # Website settings
     website_path: Path = Field(
-        default_factory=lambda: Path("../priyanshujain.dev"),
+        default_factory=lambda: Path("."),
         description="Path to the website project"
     )
     writings_dir: str = Field(
-        default="src/pages/writings",
+        default=".",
         description="Directory containing blog posts"
     )
     writings_index_file: str = Field(
-        default="src/pages/writings/index.js",
+        default="./index.js",
         description="Writings index file"
     )
     
@@ -65,7 +65,7 @@ class TinyConfig(BaseSettings):
         description="Maximum tokens for AI generation"
     )
     temperature: float = Field(
-        default=0.7,
+        default=0.5,
         description="Temperature for AI generation"
     )
     
