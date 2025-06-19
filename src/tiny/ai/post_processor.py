@@ -5,10 +5,26 @@ import logging
 from dataclasses import dataclass
 
 from tiny.ai.llm_client import LLMClient
-from tiny.ai.prompts import POST_CONVERSION_PROMPT, get_style_examples
+from tiny.ai.prompts import get_style_examples
 
 
 logger = logging.getLogger(__name__)
+
+
+# System and user prompt constants
+SYSTEM_PROMPT = """You are an expert content creator who specializes in converting raw notes into engaging blog posts. 
+Your goal is to transform informal notes into well-structured, readable content while maintaining the original ideas and insights.
+Always return your response as valid JSON with 'title' and 'content' fields."""
+
+USER_PROMPT_TEMPLATE = """Please convert the following notes into a well-structured blog post.
+
+Style Examples:
+{style_examples}
+
+Notes to convert:
+{notes}
+
+Return as JSON with 'title' and 'content' fields."""
 
 
 @dataclass
@@ -42,15 +58,15 @@ class PostProcessor:
         """
         logger.info("Processing note with AI...")
 
-        # Build the full prompt with style examples
+        # Build the user prompt with style examples
         style_examples = get_style_examples()
-        full_prompt = POST_CONVERSION_PROMPT.format(
+        user_prompt = USER_PROMPT_TEMPLATE.format(
             notes=note_content, style_examples=style_examples
         )
 
         try:
-            # Call the LLM
-            response = self.llm_client.generate(full_prompt)
+            # Call the LLM with system and user prompts
+            response = self.llm_client.generate(user_prompt, SYSTEM_PROMPT)
             logger.debug(f"AI response: {response}")
 
             # Parse the JSON response

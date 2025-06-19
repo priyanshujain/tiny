@@ -20,20 +20,22 @@ class LLMClient:
         self.temperature = config.temperature
         self.max_tokens = config.max_tokens
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, user_prompt: str, system_prompt: str | None = None) -> str:
         """
         Generate text using LiteLLM.
 
         Args:
-            prompt: The prompt to send to the LLM
+            user_prompt: The user prompt to send to the LLM
+            system_prompt: Optional system prompt to provide context/instructions
 
         Returns:
             Raw string response from the LLM
         """
         # Create messages
-        messages = [
-            {"role": "user", "content": prompt},
-        ]
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": user_prompt})
 
         # Generate response
         logger.info(f"Generating response with {self.model}...")
@@ -41,7 +43,7 @@ class LLMClient:
         # Handle test mode
         if self.model == "test":
             logger.info("Using test mode - returning mock response")
-            return f"Test response for prompt: {prompt[:50]}..."
+            return f"Test response for prompt: {user_prompt[:50]}..."
         else:
             response = litellm.completion(
                 model=self.model,
