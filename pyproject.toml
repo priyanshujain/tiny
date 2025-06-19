@@ -16,12 +16,14 @@ dependencies = [
     "rich",
     "python-dotenv",
     "pyyaml",
+    "google-cloud-aiplatform",
+    "google-auth",
 ]
 
 [project.scripts]
 tiny = "tiny.cli:main"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest",
     "ruff",

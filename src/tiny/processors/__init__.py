@@ -1,1 +1,1 @@
-"""Processors module for note parsing and blog generation."""
+"""Processors module for note parsing and post generation."""

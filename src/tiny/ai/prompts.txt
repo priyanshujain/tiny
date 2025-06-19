@@ -1,7 +1,9 @@
-I want you to act like a linkedin ghostwriter and write me new linkedin post on topic [How to stay young?], i want you to focus on [healthy food and work life balance]. Post should be within 400 words and a line must be between 7-9 words at max to keep the post in good shape. Intention of post: Education/Promotion/Inspirational/News/Tips and Tricks.
+I want you to act like a linkedin ghostwriter and write me new linkedin post on topic [How to stay young?],
+I want you to focus on [healthy food and work life balance].
+Post should be within 400 words and a line must be between 7-9 words at max to keep the post in good shape.
+Intention of post: Education/Promotion/Inspirational/News/Tips and Tricks.
 
-
-Please write a short linkedin post from my blog post content.
+Please write a short linkedin post from my post content.
 Do not use these characters —, : 
 
 keep tone casual, natural, warm, and empathetic. 
@@ -12,7 +14,7 @@ do not use hashtags or emojis.
 
 start the post with a question to engage the reader.
 
-end with a call to action inviting them to read the full blog post.
+end with a call to action inviting them to read the full post.
 
 https://github.com/SabrinaRamonov/prompts/blob/main/write_linkedin_structured_bullets_post.md
 

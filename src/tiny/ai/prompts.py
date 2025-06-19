@@ -1,7 +1,7 @@
-"""AI prompts for blog post generation."""
+"""AI prompts for post generation."""
 
 STYLE_ANALYSIS_PROMPT = """
-Analyze the following blog posts to understand Priyanshu Jain's writing style:
+Analyze the following posts to understand Priyanshu Jain's writing style:
 
 CHARACTERISTICS TO EXTRACT:
 - Tone and voice (personal, professional, reflective, etc.)
@@ -12,14 +12,14 @@ CHARACTERISTICS TO EXTRACT:
 - Personal anecdotes and experiences
 - Way of connecting personal experiences to broader insights
 
-BLOG POSTS:
+POSTS:
 {existing_posts}
 
 Based on this analysis, describe his writing style in detail.
 """
 
-BLOG_CONVERSION_PROMPT = """
-You are a content editor for Priyanshu Jain's personal blog. Convert the following raw notes into his distinctive writing style for a blog post.
+POST_CONVERSION_PROMPT = """
+You are a content editor for Priyanshu Jain's personal website. Convert the following raw notes into his distinctive writing style for a post.
 
 PRIYANSHU'S WRITING STYLE:
 - Personal, reflective tone that connects experiences to broader insights
@@ -41,12 +41,12 @@ REQUIREMENTS:
 RAW NOTES:
 {notes}
 
-EXISTING BLOG POSTS FOR STYLE REFERENCE:
+EXISTING POSTS FOR STYLE REFERENCE:
 {style_examples}
 
 Return the response in this exact JSON format:
 {{
-    "title": "Blog Post Title",
+    "title": "Post Title",
     "content": "First paragraph text.\\n\\nSecond paragraph text.",
     "date": "YYYY-MM-DD"
 }}
@@ -55,10 +55,10 @@ IMPORTANT: The content should be exactly two paragraphs separated by \\n\\n. Mak
 """
 
 TITLE_EXTRACTION_PROMPT = """
-Extract a compelling blog post title from the following content. The title should:
+Extract a compelling post title from the following content. The title should:
 - Be concise (3-8 words)
 - Capture the main theme or insight
-- Match Priyanshu's blog style (look at existing titles for reference)
+- Match Priyanshu's post style (look at existing titles for reference)
 - Be engaging but not clickbait-y
 
 CONTENT:
@@ -83,7 +83,7 @@ Return only the title, nothing else.
 
 
 def get_style_examples() -> str:
-    """Get example blog posts for style reference."""
+    """Get example posts for style reference."""
     return """
 EXAMPLE 1 - "Reflecting on 2024":
 New years get people in a reflective mood, and I wanted to share some personal thoughts about how it has gone so far, and some of the things I've done and learned along the way.
