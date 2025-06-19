@@ -25,20 +25,24 @@ def main():
 @main.command()
 @click.argument("note_file", type=click.Path(exists=True, path_type=Path))
 @click.option("--deploy", is_flag=True, help="Deploy to website after processing")
-@click.option("--dry-run", is_flag=True, help="Show what would be done without executing")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be done without executing"
+)
 def process(note_file: Path, deploy: bool, dry_run: bool):
     """Process a single note file into a blog post."""
     config = get_config()
-    
-    console.print(Panel(
-        f"Processing note: [bold blue]{note_file}[/bold blue]",
-        title="Tiny Agent",
-        border_style="blue"
-    ))
-    
+
+    console.print(
+        Panel(
+            f"Processing note: [bold blue]{note_file}[/bold blue]",
+            title="Tiny Agent",
+            border_style="blue",
+        )
+    )
+
     if dry_run:
         console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]")
-    
+
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -51,42 +55,46 @@ def process(note_file: Path, deploy: bool, dry_run: bool):
         from tiny.website.file_manager import FileManager
         from tiny.website.index_updater import IndexUpdater
         from tiny.git.operations import GitOperations
-        
+
         task = progress.add_task("Reading note...", total=6)
-        
+
         # Step 1: Read note
         note_content = read_note_file(note_file)
-        progress.update(task, advance=1, description="Generating blog content with AI...")
-        
+        progress.update(
+            task, advance=1, description="Generating blog content with AI..."
+        )
+
         # Step 2: Generate blog content
         ai_client = VertexAIClient(config)
         blog_content = ai_client.generate_blog_post(note_content)
         progress.update(task, advance=1, description="Creating blog post file...")
-        
+
         # Step 3: Generate blog post file
         blog_gen = BlogGenerator(config)
         blog_file_path = blog_gen.generate(blog_content)
         progress.update(task, advance=1, description="Updating writings index...")
-        
+
         if not dry_run:
             # Step 4: Update writings index
             index_updater = IndexUpdater(config)
             index_updater.add_entry(blog_content)
             progress.update(task, advance=1, description="Committing changes...")
-            
+
             # Step 5: Git operations
             git_ops = GitOperations(config)
             git_ops.commit_changes(f"Add new blog post: {blog_content.title}")
-            progress.update(task, advance=1, description="Deploying..." if deploy else "Complete!")
-            
+            progress.update(
+                task, advance=1, description="Deploying..." if deploy else "Complete!"
+            )
+
             # Step 6: Deploy (optional)
             if deploy:
                 git_ops.deploy()
         else:
             progress.update(task, advance=3, description="Dry run complete!")
-        
+
         progress.update(task, advance=1)
-    
+
     console.print(f"[green]✓[/green] Successfully processed: {blog_file_path}")
     if deploy and not dry_run:
         console.print("[green]✓[/green] Deployed to website")
@@ -94,32 +102,37 @@ def process(note_file: Path, deploy: bool, dry_run: bool):
 
 @main.command()
 @click.argument("notes_dir", type=click.Path(exists=True, path_type=Path))
-@click.option("--deploy", is_flag=True, help="Deploy to website after processing all notes")
+@click.option(
+    "--deploy", is_flag=True, help="Deploy to website after processing all notes"
+)
 def batch(notes_dir: Path, deploy: bool):
     """Process multiple notes from a directory."""
     config = get_config()
-    
+
     # Find all markdown files
     note_files = list(notes_dir.glob("*.md"))
     if not note_files:
         console.print("[yellow]No .md files found in directory[/yellow]")
         return
-    
-    console.print(Panel(
-        f"Processing {len(note_files)} notes from: [bold blue]{notes_dir}[/bold blue]",
-        title="Batch Processing",
-        border_style="blue"
-    ))
-    
+
+    console.print(
+        Panel(
+            f"Processing {len(note_files)} notes from: [bold blue]{notes_dir}[/bold blue]",
+            title="Batch Processing",
+            border_style="blue",
+        )
+    )
+
     for note_file in note_files:
         try:
             # Process each note (without individual deployment)
             process.callback(note_file, deploy=False, dry_run=False)
         except Exception as e:
             console.print(f"[red]✗[/red] Failed to process {note_file}: {e}")
-    
+
     if deploy:
         from tiny.git.operations import GitOperations
+
         git_ops = GitOperations(config)
         git_ops.deploy()
         console.print("[green]✓[/green] Batch deployment complete")
@@ -129,13 +142,13 @@ def batch(notes_dir: Path, deploy: bool):
 def setup():
     """Initial setup and configuration."""
     config = get_config()
-    
-    console.print(Panel(
-        "Setting up tiny agent configuration",
-        title="Setup",
-        border_style="green"
-    ))
-    
+
+    console.print(
+        Panel(
+            "Setting up tiny agent configuration", title="Setup", border_style="green"
+        )
+    )
+
     # Check if .env exists
     env_file = Path(".env")
     if not env_file.exists():
@@ -174,12 +187,12 @@ TEMPERATURE=0.7
         console.print("[green]✓[/green] Created .env file")
     else:
         console.print("[yellow]⚠[/yellow] .env file already exists")
-    
+
     # Create notes directory
     notes_dir = Path(config.notes_dir)
     notes_dir.mkdir(exist_ok=True)
     console.print(f"[green]✓[/green] Created notes directory: {notes_dir}")
-        
+
     console.print("\n[bold green]Setup complete![/bold green]")
     console.print("Next steps:")
     console.print("1. Set up Google Cloud authentication:")
