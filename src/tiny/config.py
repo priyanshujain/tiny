@@ -15,20 +15,27 @@ class TinyConfig(BaseSettings):
         description="LLM model to use (any LiteLLM compatible model)",
     )
 
-    # Website settings
-    website_path: Path = Field(
-        default_factory=lambda: Path("."), description="Path to the website project"
+    # Google Cloud / Vertex AI settings
+    google_cloud_project: str = Field(default="", description="Google Cloud project ID")
+    vertex_ai_location: str = Field(
+        default="us-east1", description="Vertex AI location"
     )
+
+    # Output settings
+    posts_dir: str = Field(default="./posts", description="Directory to write posts to")
+
+    # Website settings
+    website_path: str = Field(default="", description="Path to website directory")
     writings_dir: str = Field(
-        default=".", description="Directory containing blog posts"
+        default="src/pages/writings", description="Directory for blog posts"
     )
     writings_index_file: str = Field(
-        default="./index.js", description="Writings index file"
+        default="src/pages/writings/index.js", description="Index file to update"
     )
 
     # Git settings
     git_remote: str = Field(default="origin", description="Git remote name")
-    git_branch: str = Field(default="main", description="Git branch to push to")
+    git_branch: str = Field(default="main", description="Git branch to use")
 
     # Notes settings
     notes_dir: Path = Field(
