@@ -1,0 +1,1 @@
+"""Processors module for note parsing and blog generation."""

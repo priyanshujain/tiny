@@ -1,0 +1,42 @@
+[project]
+name = "tiny"
+version = "0.1.0"
+description = "AI agent to convert daily notes into blog posts"
+readme = "README.md"
+authors = [
+    { name = "Priyanshu Jain", email = "priyanshu@priyanshujain.dev" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "langchain",
+    "langchain-google-vertexai", 
+    "click",
+    "pydantic",
+    "pydantic-settings",
+    "gitpython",
+    "rich",
+    "python-dotenv",
+    "pyyaml",
+]
+
+[project.scripts]
+tiny = "tiny.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
