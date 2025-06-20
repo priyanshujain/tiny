@@ -1,4 +1,8 @@
+- Never start coding before approval on the design and implementation plan
 - Never commit and/or push before the user has tested your changes
+- Alway write tests for new features and bug fixes
+- Always check branch before writing any code, check if creating new branch is needed
+- use `gh` for all github operations
 - Always fix import issues, always fix all lint issues, always typecheck and fix type issues even in unrelated code
 - Please use function over class when possible
 - Please use f-strings over string concatenation
@@ -7,3 +11,6 @@
 - Always use uv for running commands
 - Focus on unix philosophy: do one thing and do it well
 - Always run ruff check and ruff format before committing
+- cleanup the dummy scripts from code before committing
+- use `uv run` for running scripts
+- do not write a lot of comments or docstrings, use docstrings when code is not self-explanatory
