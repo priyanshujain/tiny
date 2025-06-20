@@ -4,29 +4,25 @@ version = "0.1.0"
 description = "AI agent to convert daily notes into blog posts"
 readme = "README.md"
 authors = [
-    { name = "Priyanshu Jain", email = "priyanshu@priyanshujain.dev" }
+    { name = "Priyanshu Jain", email = "ipriyanshujain@gmail.com" }
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "litellm",
-    "click",
-    "pydantic",
-    "pydantic-settings",
-    "gitpython",
-    "rich",
-    "python-dotenv",
-    "pyyaml",
-    "google-cloud-aiplatform",
-    "google-auth",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.9.1",
+    "click>=8.2.1",
+    "google-auth>=2.40.3",
+    "rich>=14.0.0",
+    "litellm>=1.72.7",
 ]
 
 [project.scripts]
-tiny = "tiny.cli:main"
+tiny = "tiny.cli:cli"
 
 [dependency-groups]
 dev = [
-    "pytest",
-    "ruff",
+    "pytest>=8.4.1",
+    "ruff>=0.12.0",
 ]
 
 [build-system]

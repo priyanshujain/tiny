@@ -9,13 +9,12 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from tiny.config import get_config
 
-
 console = Console()
 
 
 @click.command()
 @click.argument("note_file", type=click.Path(exists=True, path_type=Path))
-def main(note_file: Path):
+def cli(note_file: Path):
     """Convert notes to posts."""
     config = get_config()
 
@@ -26,7 +25,6 @@ def main(note_file: Path):
             border_style="blue",
         )
     )
-
 
     with Progress(
         SpinnerColumn(),
@@ -53,14 +51,9 @@ def main(note_file: Path):
 
         # Step 3: Write post file
         post_writer = PostWriter(config)
-        post_file_path = post_writer.write_post(post_content)
+        post_file_path = post_writer.write_post(post_content, note_file.name)
         progress.update(task, advance=1, description="Complete!")
-
 
         progress.update(task, advance=1)
 
     console.print(f"[green]✓[/green] Successfully processed: {post_file_path}")
-
-
-if __name__ == "__main__":
-    main()
