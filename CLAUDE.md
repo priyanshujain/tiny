@@ -16,3 +16,4 @@
 - cleanup the dummy scripts from code before committing
 - use `uv run` for running scripts
 - do not write a lot of comments or docstrings, use any comment or docstrings when code is not self-explanatory
+- User experience is the most important, always think about it
