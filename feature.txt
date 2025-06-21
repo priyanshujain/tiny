@@ -1,4 +1,0 @@
-I want to build 
-
-1. output path as cli option
-2. Update prompts to use valid system prompt and user prompt
