@@ -1,7 +1,12 @@
-from click.testing import CliRunner
-from tiny.cli import cli
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
+
+from click.testing import CliRunner
+
+from tiny.cli import cli
+from tiny.config import TinyConfig
+from tiny.logging import setup_logging
 
 
 class TestCLI:
@@ -113,3 +118,53 @@ class TestCLI:
             assert result.exit_code == 0
             assert output_dir.exists()
             assert output_file.exists()
+
+    def test_config_setup(self):
+        """Test that config can set up logging correctly."""
+        # Test config validation
+        config = TinyConfig()
+        assert config.log_level == "INFO"
+
+        config = TinyConfig(log_level="DEBUG")
+        assert config.log_level == "DEBUG"
+
+        # Test logging setup with config
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fake_home = Path(temp_dir)
+
+            with patch("tiny.logging.Path.home", return_value=fake_home):
+                logger, log_file_path = setup_logging("INFO")
+
+                # Check directory and file creation
+                log_dir = fake_home / ".tiny" / "logs"
+                assert log_dir.exists()
+                assert log_file_path.exists()
+                assert log_file_path.name.endswith(".log")
+
+                # Check logging works
+                logger.info("Test log message")
+                log_content = log_file_path.read_text()
+                assert "Test log message" in log_content
+                assert "INFO" in log_content
+
+    def test_cli_logging(self):
+        """Test that CLI actually creates logs when run."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fake_home = Path(temp_dir)
+
+            with patch("tiny.logging.Path.home", return_value=fake_home):
+                runner = CliRunner()
+                result = runner.invoke(cli, ["--debug", "write", "--help"])
+
+                assert result.exit_code == 0
+
+                # Check that CLI created log files
+                log_dir = fake_home / ".tiny" / "logs"
+                assert log_dir.exists()
+
+                log_files = list(log_dir.glob("*.log"))
+                assert len(log_files) == 1
+
+                # Check that CLI startup was logged
+                log_content = log_files[0].read_text()
+                assert "Starting tiny CLI with log level: DEBUG" in log_content

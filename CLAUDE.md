@@ -1,5 +1,7 @@
 - Never start coding before approval on the design and implementation plan
-- Never commit and/or push before the user has tested your changes
+- Never commit before running tests
+- please commit after every given group of tasks are complete
+- Never push before asking for approval for it
 - Alway write tests for new features and bug fixes
 - Always check branch before writing any code, check if creating new branch is needed
 - use `gh` for all github operations
@@ -13,4 +15,4 @@
 - Always run ruff check and ruff format before committing
 - cleanup the dummy scripts from code before committing
 - use `uv run` for running scripts
-- do not write a lot of comments or docstrings, use docstrings when code is not self-explanatory
+- do not write a lot of comments or docstrings, use any comment or docstrings when code is not self-explanatory
