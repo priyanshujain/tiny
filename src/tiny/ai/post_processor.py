@@ -1,37 +1,70 @@
 """Post processor for converting notes to posts."""
 
-import json
-from dataclasses import dataclass
+from langchain_core.output_parsers import JsonOutputParser
+from pydantic import BaseModel, Field
 
 from tiny.ai.llm_client import LLMClient
-from tiny.ai.prompts import get_style_examples
 from tiny.logging import get_logger
 
 logger = get_logger("ai.post_processor")
 
 
 # System and user prompt constants
-SYSTEM_PROMPT = """You are an expert content creator who specializes in converting raw notes into engaging blog posts. 
-Your goal is to transform informal notes into well-structured, readable content while maintaining the original ideas and insights.
-Always return your response as valid JSON with 'title' and 'content' fields."""
+POST_SYSTEM_PROMPT = """
+You are a ghostwriter who specializes in converting raw notes into engaging posts. You are writing on behalf of Priyanshu Jain(pjay), a thoughtful and introspective software engineer and entrepreneur. pjay's writing style is casual yet analytical, exploratory yet grounded. He often begins with a broad idea or question and thinks through it as he writes—embracing uncertainty, revising assumptions, and allowing ideas to evolve.
 
-USER_PROMPT_TEMPLATE = """Please convert the following notes into a well-structured blog post.
+<tone>
+- Conversational, but never shallow
+- Honest and unpretentious, avoids jargon unless necessary
+- Curious, reflective, and open to new ways of seeing things
+- Prefers plain English over fancy words, and values clarity
+</tone>
 
-Style Examples:
-{style_examples}
+<structure>
+- Often begins with a question or premise worth exploring
+- Breaks ideas into logical, digestible parts
+- Uses concrete examples, analogies, or personal stories to explain abstract ideas
+- Willing to show mental dead-ends or changes in opinion
+- Ends with a key insight, open-ended question, or reflection
+
+<voice>
+- Feels like a smart friend thinking aloud
+- Doesn't try to sound authoritative—more like someone trying to figure it out
+- Doesn't lecture; invites readers along for the journey
+- Prefers shorter paragraphs and simple sentence structures
+- should not use lists or bullet points
+- do not use hashtags or too many emojis
+- Never overly sentimental or dramatic, but sincerely engaged
+</voice>
+
+
+<constraints>
+- Avoid fluff, buzzwords, or corporate-speak
+- Don't sound like a self-help guru
+- If quoting others, make it relevant—not decorative
+- Stay concise enough for a 5-minute read
+- Write as if sharing a work-in-progress insight, not a final verdict
+- Actual post content should be within 400 words, response can be longer
+- only use utf-8 characters
+</constraints>
+"""
+
+POST_USER_PROMPT = """Please convert the following notes into a well-structured post that reflects Priyanshu Jain's writing style. The post should be engaging, thoughtful, and maintain his personal voice.
 
 Notes to convert:
 {notes}
 
-Return as JSON with 'title' and 'content' fields."""
+Result should be only the post title and post content. Nothing else.
+
+{format_instructions}
+"""
 
 
-@dataclass
-class PostContent:
-    """Simple post content with title and content only."""
+class PostContent(BaseModel):
+    """Post content with title and content."""
 
-    title: str
-    content: str
+    title: str = Field(description="The title of the post")
+    content: str = Field(description="The main content of the post")
 
 
 class PostProcessor:
@@ -40,6 +73,7 @@ class PostProcessor:
     def __init__(self, llm_client: LLMClient):
         """Initialize the post processor."""
         self.llm_client = llm_client
+        self.parser = JsonOutputParser(pydantic_object=PostContent)
         logger.debug("PostProcessor initialized")
 
     def process_note(self, note_content: str) -> PostContent:
@@ -59,69 +93,22 @@ class PostProcessor:
         logger.debug(f"Processing note (length: {len(note_content)})")
         logger.info("Processing note with AI...")
 
-        style_examples = get_style_examples()
-        logger.debug(f"Retrieved {len(style_examples)} style examples")
-
-        user_prompt = USER_PROMPT_TEMPLATE.format(
-            notes=note_content, style_examples=style_examples
+        user_prompt = POST_USER_PROMPT.format(
+            notes=note_content,
+            format_instructions=self.parser.get_format_instructions(),
         )
         logger.debug(f"Built user prompt (length: {len(user_prompt)})")
 
         try:
-            response = self.llm_client.generate(user_prompt, SYSTEM_PROMPT)
+            response = self.llm_client.generate(user_prompt, POST_SYSTEM_PROMPT)
             logger.debug(f"AI response received (length: {len(response)})")
 
-            post_data = self._parse_response(response)
+            post_data = self.parser.parse(response)
 
-            result = PostContent(title=post_data["title"], content=post_data["content"])
+            result = PostContent(**post_data)
             logger.info(f"Successfully processed note into post: '{result.title}'")
             return result
 
         except Exception as e:
             logger.error(f"Failed to process note: {e}")
             raise
-
-    def _parse_response(self, response: str) -> dict:
-        """
-        Parse the AI response and extract post data.
-
-        Args:
-            response: Raw AI response
-
-        Returns:
-            Dictionary with title, content, and date
-
-        Raises:
-            ValueError: If response cannot be parsed as valid JSON
-        """
-        logger.debug("Parsing AI response as JSON")
-
-        try:
-            cleaned_response = response.strip()
-            if cleaned_response.startswith("```json"):
-                cleaned_response = cleaned_response[7:]
-                logger.debug("Removed JSON code block prefix")
-            if cleaned_response.endswith("```"):
-                cleaned_response = cleaned_response[:-3]
-                logger.debug("Removed JSON code block suffix")
-            cleaned_response = cleaned_response.strip()
-
-            data = json.loads(cleaned_response)
-            logger.debug(f"Successfully parsed JSON with keys: {list(data.keys())}")
-
-            if "title" not in data or "content" not in data:
-                logger.error(
-                    f"Response missing required fields. Available fields: {list(data.keys())}"
-                )
-                raise ValueError("Response missing required fields: title or content")
-
-            logger.info(f"Successfully parsed post: '{data['title']}'")
-            return data
-
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse AI response as JSON: {e}")
-            logger.error(f"Raw response: {response}")
-            raise ValueError(f"Invalid JSON response from AI: {e}")
-        except Exception as e:
-            logger.error(f"Error parsing response: {e}")
-            raise ValueError(f"Failed to parse AI response: {e}")
