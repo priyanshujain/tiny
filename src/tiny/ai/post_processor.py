@@ -1,14 +1,13 @@
 """Post processor for converting notes to posts."""
 
 import json
-import logging
 from dataclasses import dataclass
 
 from tiny.ai.llm_client import LLMClient
 from tiny.ai.prompts import get_style_examples
+from tiny.logging import get_logger
 
-
-logger = logging.getLogger(__name__)
+logger = get_logger("ai.post_processor")
 
 
 # System and user prompt constants
@@ -41,6 +40,7 @@ class PostProcessor:
     def __init__(self, llm_client: LLMClient):
         """Initialize the post processor."""
         self.llm_client = llm_client
+        logger.debug("PostProcessor initialized")
 
     def process_note(self, note_content: str) -> PostContent:
         """
@@ -56,24 +56,26 @@ class PostProcessor:
             ValueError: If the AI response cannot be parsed
             Exception: If AI generation fails
         """
+        logger.debug(f"Processing note (length: {len(note_content)})")
         logger.info("Processing note with AI...")
 
-        # Build the user prompt with style examples
         style_examples = get_style_examples()
+        logger.debug(f"Retrieved {len(style_examples)} style examples")
+
         user_prompt = USER_PROMPT_TEMPLATE.format(
             notes=note_content, style_examples=style_examples
         )
+        logger.debug(f"Built user prompt (length: {len(user_prompt)})")
 
         try:
-            # Call the LLM with system and user prompts
             response = self.llm_client.generate(user_prompt, SYSTEM_PROMPT)
-            logger.debug(f"AI response: {response}")
+            logger.debug(f"AI response received (length: {len(response)})")
 
-            # Parse the JSON response
             post_data = self._parse_response(response)
 
-            # Create and return PostContent (ignoring date)
-            return PostContent(title=post_data["title"], content=post_data["content"])
+            result = PostContent(title=post_data["title"], content=post_data["content"])
+            logger.info(f"Successfully processed note into post: '{result.title}'")
+            return result
 
         except Exception as e:
             logger.error(f"Failed to process note: {e}")
@@ -92,20 +94,25 @@ class PostProcessor:
         Raises:
             ValueError: If response cannot be parsed as valid JSON
         """
+        logger.debug("Parsing AI response as JSON")
+
         try:
-            # Clean up the response - remove any markdown code blocks
             cleaned_response = response.strip()
             if cleaned_response.startswith("```json"):
                 cleaned_response = cleaned_response[7:]
+                logger.debug("Removed JSON code block prefix")
             if cleaned_response.endswith("```"):
                 cleaned_response = cleaned_response[:-3]
+                logger.debug("Removed JSON code block suffix")
             cleaned_response = cleaned_response.strip()
 
-            # Parse JSON
             data = json.loads(cleaned_response)
+            logger.debug(f"Successfully parsed JSON with keys: {list(data.keys())}")
 
-            # Validate required fields
             if "title" not in data or "content" not in data:
+                logger.error(
+                    f"Response missing required fields. Available fields: {list(data.keys())}"
+                )
                 raise ValueError("Response missing required fields: title or content")
 
             logger.info(f"Successfully parsed post: '{data['title']}'")
