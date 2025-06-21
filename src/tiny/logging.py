@@ -80,19 +80,3 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
     if name:
         return logging.getLogger(f"tiny.{name}")
     return logging.getLogger("tiny")
-
-
-def log_function_call(func_name: str, **kwargs):
-    """Helper function to log function calls with parameters."""
-    logger = get_logger()
-    params = ", ".join(f"{k}={v}" for k, v in kwargs.items())
-    logger.debug(f"Calling {func_name}({params})")
-
-
-def log_processing_step(step: str, details: str = ""):
-    """Helper function to log processing steps."""
-    logger = get_logger()
-    message = f"Processing step: {step}"
-    if details:
-        message += f" - {details}"
-    logger.info(message)

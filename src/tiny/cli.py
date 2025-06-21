@@ -41,6 +41,7 @@ def cli(ctx: click.Context, debug: bool, info: bool):
 
     ctx.obj["logger"] = logger
     ctx.obj["log_file_path"] = log_file_path
+    ctx.obj["config"] = config
 
     logger.info(f"Starting tiny CLI with log level: {log_level}")
     logger.debug(f"Log file: {log_file_path}")
@@ -70,7 +71,7 @@ def write(ctx: click.Context):
 def post(ctx: click.Context, input_path: Path, output_path: Path | None):
     """Convert notes to posts."""
     logger = ctx.obj["logger"]
-    config = get_config()
+    config = ctx.obj["config"]
 
     logger.info(f"Starting post conversion for: {input_path}")
     logger.debug(f"Output path: {output_path}")
